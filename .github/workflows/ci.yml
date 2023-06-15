@@ -14,8 +14,18 @@ jobs:
           java-version: 11
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-      - name: Execute Gradle build
+      - name: Set Secret Properties
+        env:
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: echo "$LOCAL_PROPERTIES" > ./local.properties
+      - name: Prepare release keystore
+        run: |
+          echo "${{ secrets.BASE_64_SIGNING_KEY }}" > release_keystore.jks.asc
+          gpg -d --passphrase "${{ secrets.BASE_64_SIGNING_KEY_PASSPHRASE }}" --batch release_keystore.jks.asc > app/release_keystore.jks
+      - name: Build with Gradle
         run: ./gradlew build
+      - name: Build release artifact
+        run: ./gradlew assembleRelease
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
