@@ -27,17 +27,11 @@ android {
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "app_version", variant.versionName
-        variant.outputs.all { output ->
-            if (variant.buildType.name == 'release') {
-                outputFileName = "Killergram_${defaultConfig.versionName}.apk"
-            }
-        }
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
